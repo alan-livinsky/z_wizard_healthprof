@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <form col="4">
-    <separator string="Party" colspan="4"/>
+    <separator string="Party" colspan="4" id="party_section"/>
     <label name="name"/>
     <field name="name"/>
     <label name="lastname"/>
@@ -9,14 +9,14 @@
     <field name="gender"/>
     <newline/>
 
-    <separator string="Employee" colspan="4"/>
+    <separator string="Employee" colspan="4" id="employee_section"/>
     <label name="company"/>
     <field name="company"/>
     <label name="cargo"/>
     <field name="cargo"/>
     <newline/>
 
-    <separator string="Health Professional" colspan="4"/>
+    <separator string="Health Professional" colspan="4" id="health_professional_section"/>
     <label name="institution"/>
     <field name="institution"/>
     <label name="is_doctor"/>
@@ -32,7 +32,7 @@
     <field name="info" colspan="3"/>
     <newline/>
 
-    <separator string="Working Schedule" colspan="4"/>
+    <separator string="Working Schedule" colspan="4" id="working_schedule_section"/>
     <label name="time_start"/>
     <field name="time_start"/>
     <label name="time_end"/>
