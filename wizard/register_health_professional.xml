@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="register_health_professional_start_view">
+            <field name="model">z_wizard_healthprof.health_professional.start</field>
+            <field name="type">form</field>
+            <field name="name">register_health_professional_start</field>
+        </record>
+
+        <record model="ir.action.wizard" id="act_register_health_professional">
+            <field name="name">Register Health Professional</field>
+            <field name="wiz_name">z_wizard_healthprof.register_health_professional</field>
+        </record>
+
+        <menuitem name="Register Health Professional"
+            id="menu_register_health_professional"
+            parent="health.gnuhealth_conf_healthprofessionals"
+            action="act_register_health_professional"
+            sequence="10"/>
+    </data>
+</tryton>
