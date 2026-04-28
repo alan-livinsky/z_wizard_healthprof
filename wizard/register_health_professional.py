@@ -157,10 +157,12 @@ class RegisterHealthProfessionalWizard(Wizard):
         Employee = pool.get('company.employee')
         HealthProfessional = pool.get('gnuhealth.healthprofessional')
         HealthProfessionalSpecialty = pool.get('gnuhealth.hp_specialty')
+        fed_country = Party.default_fed_country() or 'XXX'
 
         party, = Party.create([{
                     'name': self.start.name,
                     'lastname': self.start.lastname,
+                    'fed_country': fed_country,
                     'gender': self.start.gender,
                     'is_person': True,
                     'is_healthprof': True,
