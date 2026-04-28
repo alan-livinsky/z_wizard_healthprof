@@ -192,14 +192,12 @@ class RegisterHealthProfessionalWizard(Wizard):
                     'daily_appointment_quantity': self.start.daily_appointment_quantity,
                     }])
 
-        specialty_rows = []
         main_hp_specialty = None
         for specialty_id in self._specialty_ids():
             hp_specialty, = HealthProfessionalSpecialty.create([{
                         'name': healthprofessional.id,
                         'specialty': specialty_id,
                         }])
-            specialty_rows.append(hp_specialty)
             if specialty_id == self.start.main_specialty.id:
                 main_hp_specialty = hp_specialty
 

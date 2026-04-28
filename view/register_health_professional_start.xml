@@ -15,7 +15,10 @@
     <label name="cargo"/>
     <field name="cargo"/>
     <newline/>
-
+    <!-- Isolation step: keep only the basic Party/Employee fields first.
+         If the wizard opens now, the problem is in one of the commented
+         Health Professional or Working Schedule widgets below. -->
+    <!--
     <separator string="Health Professional" colspan="4" id="health_professional_section"/>
     <label name="institution"/>
     <field name="institution"/>
@@ -60,4 +63,5 @@
     <newline/>
     <label name="sunday"/>
     <field name="sunday"/>
+    -->
 </form>
