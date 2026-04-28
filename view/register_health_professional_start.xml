@@ -5,6 +5,9 @@
     <field name="name"/>
     <label name="lastname"/>
     <field name="lastname"/>
+    <label name="idup"/>
+    <field name="idup"/>
+    <newline/>
     <label name="gender"/>
     <field name="gender"/>
     <newline/>
@@ -12,6 +15,9 @@
     <separator string="Datos laborales" colspan="4" id="datos_laborales"/>
     <label name="company"/>
     <field name="company"/>
+    <label name="start_date"/>
+    <field name="start_date"/>
+    <newline/>
     <label name="cargo"/>
     <field name="cargo"/>
     <newline/>

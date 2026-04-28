@@ -11,6 +11,7 @@ class RegisterHealthProfessionalStart(ModelView):
 
     name = fields.Char('Nombre', required=True)
     lastname = fields.Char('Apellidos', required=True)
+    idup = fields.Char('IDUP / DNI', required=True)
     gender = fields.Selection([
             (None, ''),
             ('m', 'Masculino'),
@@ -22,6 +23,7 @@ class RegisterHealthProfessionalStart(ModelView):
             ], 'Genero', required=True, sort=False)
 
     company = fields.Many2One('company.company', 'Empresa', required=True)
+    start_date = fields.Date('Fecha de inicio', required=True)
     cargo = fields.Char('Cargo', required=True)
 
     institution = fields.Many2One(
@@ -48,7 +50,7 @@ class RegisterHealthProfessionalStart(ModelView):
     saturday = fields.Boolean('Sabado')
     sunday = fields.Boolean('Domingo')
     daily_appointment_quantity = fields.Integer(
-        'Cantidad de turnos por dia', required=True,
+        'Cantidad de turnos por dia',
         help='Cantidad maxima de turnos a otorgar por dia.')
 
     @staticmethod
@@ -60,6 +62,11 @@ class RegisterHealthProfessionalStart(ModelView):
         return False
 
     @staticmethod
+    def default_start_date():
+        Date = Pool().get('ir.date')
+        return Date.today()
+
+    @staticmethod
     def default_monday():
         return True
 
@@ -67,15 +74,18 @@ class RegisterHealthProfessionalStart(ModelView):
     def default_friday():
         return True
 
+    def _compute_delta_time(self):
+        if self.time_start and self.time_end and self.time_end > self.time_start:
+            delta_hours = self.time_end.hour - self.time_start.hour
+            delta_minutes = self.time_end.minute - self.time_start.minute
+            return delta_hours * 60 + delta_minutes
+        return 0
+
     @fields.depends('appointment_minutes', 'time_end', 'time_start',
         'daily_appointment_quantity')
     def on_change_with_daily_appointment_quantity(self):
-        if (self.appointment_minutes and self.time_end and self.time_start
-                and not self.daily_appointment_quantity):
-            delta_hours = self.time_end.hour - self.time_start.hour
-            delta_minutes = self.time_end.minute - self.time_start.minute
-            delta_time = (
-                delta_hours * 60 + delta_minutes) if delta_hours > 0 else 0
+        if self.appointment_minutes:
+            delta_time = self._compute_delta_time()
             if delta_time > 0:
                 return int(delta_time / self.appointment_minutes)
         return self.daily_appointment_quantity
@@ -83,15 +93,42 @@ class RegisterHealthProfessionalStart(ModelView):
     @fields.depends('daily_appointment_quantity', 'time_end', 'time_start',
         'appointment_minutes')
     def on_change_with_appointment_minutes(self):
-        if (self.daily_appointment_quantity and self.time_end and self.time_start
-                and not self.appointment_minutes):
-            delta_hours = self.time_end.hour - self.time_start.hour
-            delta_minutes = self.time_end.minute - self.time_start.minute
-            delta_time = (
-                delta_hours * 60 + delta_minutes) if delta_hours > 0 else 0
+        if self.daily_appointment_quantity:
+            delta_time = self._compute_delta_time()
             if delta_time > 0:
                 return int(delta_time / self.daily_appointment_quantity)
         return self.appointment_minutes
+
+    @fields.depends('appointment_minutes', 'time_end', 'time_start',
+        'daily_appointment_quantity')
+    def on_change_appointment_minutes(self):
+        if self.appointment_minutes:
+            self.daily_appointment_quantity = (
+                self.on_change_with_daily_appointment_quantity())
+
+    @fields.depends('appointment_minutes', 'time_end', 'time_start',
+        'daily_appointment_quantity')
+    def on_change_daily_appointment_quantity(self):
+        if self.daily_appointment_quantity:
+            self.appointment_minutes = self.on_change_with_appointment_minutes()
+
+    @fields.depends('appointment_minutes', 'time_end', 'time_start',
+        'daily_appointment_quantity')
+    def on_change_time_start(self):
+        if self.appointment_minutes:
+            self.daily_appointment_quantity = (
+                self.on_change_with_daily_appointment_quantity())
+        elif self.daily_appointment_quantity:
+            self.appointment_minutes = self.on_change_with_appointment_minutes()
+
+    @fields.depends('appointment_minutes', 'time_end', 'time_start',
+        'daily_appointment_quantity')
+    def on_change_time_end(self):
+        if self.appointment_minutes:
+            self.daily_appointment_quantity = (
+                self.on_change_with_daily_appointment_quantity())
+        elif self.daily_appointment_quantity:
+            self.appointment_minutes = self.on_change_with_appointment_minutes()
 
 
 class RegisterHealthProfessionalWizard(Wizard):
@@ -133,6 +170,11 @@ class RegisterHealthProfessionalWizard(Wizard):
             self._raise_user_error(
                 'Los minutos entre citas deben ser mayores a cero.')
 
+        if (not start.daily_appointment_quantity and start.appointment_minutes
+                and start.time_start and start.time_end):
+            start.daily_appointment_quantity = (
+                start.on_change_with_daily_appointment_quantity())
+
         if start.daily_appointment_quantity <= 0:
             self._raise_user_error(
                 'La cantidad de turnos por dia debe ser mayor a cero.')
@@ -163,6 +205,7 @@ class RegisterHealthProfessionalWizard(Wizard):
                     'name': self.start.name,
                     'lastname': self.start.lastname,
                     'fed_country': fed_country,
+                    'ref': self.start.idup,
                     'gender': self.start.gender,
                     'is_person': True,
                     'is_healthprof': True,
@@ -171,6 +214,7 @@ class RegisterHealthProfessionalWizard(Wizard):
         Employee.create([{
                     'party': party.id,
                     'company': self.start.company.id,
+                    'start_date': self.start.start_date,
                     'cargo': self.start.cargo,
                     }])
 
