@@ -47,14 +47,17 @@
     <field name="monday"/>
     <label name="tuesday"/>
     <field name="tuesday"/>
+    <newline/>
     <label name="wednesday"/>
     <field name="wednesday"/>
     <label name="thursday"/>
     <field name="thursday"/>
+    <newline/>
     <label name="friday"/>
     <field name="friday"/>
     <label name="saturday"/>
     <field name="saturday"/>
+    <newline/>
     <label name="sunday"/>
     <field name="sunday"/>
 </form>
