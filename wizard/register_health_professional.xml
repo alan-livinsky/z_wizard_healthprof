@@ -8,11 +8,11 @@
         </record>
 
         <record model="ir.action.wizard" id="act_register_health_professional">
-            <field name="name">Register Health Professional</field>
+            <field name="name">Registrar Profesional de la Salud</field>
             <field name="wiz_name">z_wizard_healthprof.register_health_professional</field>
         </record>
 
-        <menuitem name="Register Health Professional"
+        <menuitem name="Registrar Profesional de la Salud"
             id="menu_register_health_professional"
             parent="health.gnuhealth_conf_healthprofessionals"
             action="act_register_health_professional"

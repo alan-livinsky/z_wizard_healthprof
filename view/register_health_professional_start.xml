@@ -1,5 +1,63 @@
 <?xml version="1.0"?>
-<form>
+<form col="4">
+    <separator string="Datos personales" colspan="4" id="datos_personales"/>
     <label name="name"/>
     <field name="name"/>
+    <label name="lastname"/>
+    <field name="lastname"/>
+    <label name="gender"/>
+    <field name="gender"/>
+    <newline/>
+
+    <separator string="Datos laborales" colspan="4" id="datos_laborales"/>
+    <label name="company"/>
+    <field name="company"/>
+    <label name="cargo"/>
+    <field name="cargo"/>
+    <newline/>
+
+    <separator string="Datos profesionales" colspan="4" id="datos_profesionales"/>
+    <label name="institution"/>
+    <field name="institution"/>
+    <label name="is_doctor"/>
+    <field name="is_doctor"/>
+    <label name="code"/>
+    <field name="code"/>
+    <newline/>
+    <label name="main_specialty"/>
+    <field name="main_specialty"/>
+    <field name="specialties" colspan="4"/>
+    <newline/>
+    <label name="info"/>
+    <field name="info" colspan="3"/>
+    <newline/>
+
+    <separator string="Horario de trabajo" colspan="4" id="horario_trabajo"/>
+    <label name="time_start"/>
+    <field name="time_start"/>
+    <label name="time_end"/>
+    <field name="time_end"/>
+    <newline/>
+    <label name="appointment_minutes"/>
+    <field name="appointment_minutes"/>
+    <label name="daily_appointment_quantity"/>
+    <field name="daily_appointment_quantity"/>
+    <newline/>
+    <label name="monday"/>
+    <field name="monday"/>
+    <label name="tuesday"/>
+    <field name="tuesday"/>
+    <newline/>
+    <label name="wednesday"/>
+    <field name="wednesday"/>
+    <label name="thursday"/>
+    <field name="thursday"/>
+    <newline/>
+    <label name="friday"/>
+    <field name="friday"/>
+    <label name="saturday"/>
+    <field name="saturday"/>
+    <newline/>
+    <label name="sunday"/>
+    <field name="sunday"/>
 </form>
