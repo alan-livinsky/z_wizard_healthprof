@@ -6,7 +6,7 @@ from . import wizard
 def register():
     Pool.register(
         wizard.RegisterHealthProfessionalStart,
-        module='z_wizard_medics', type_='model')
+        module='z_wizard_healthprof', type_='model')
     Pool.register(
         wizard.RegisterHealthProfessionalWizard,
-        module='z_wizard_medics', type_='wizard')
+        module='z_wizard_healthprof', type_='wizard')

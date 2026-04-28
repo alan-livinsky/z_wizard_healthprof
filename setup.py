@@ -3,13 +3,13 @@ from pathlib import Path
 from setuptools import setup
 
 
-MODULE_NAME = "z_wizard_medics"
+MODULE_NAME = "z_wizard_healthprof"
 PACKAGE_ROOT = f"trytond.modules.{MODULE_NAME}"
 BASE_DIR = Path(__file__).parent
 
 
 setup(
-    name="trytond-z-wizard-medics",
+    name="trytond-z-wizard-healthprof",
     version="4.2.0",
     description="Tryton/GNU Health wizard to register health professionals.",
     long_description=(BASE_DIR / "README.md").read_text(encoding="utf-8"),
