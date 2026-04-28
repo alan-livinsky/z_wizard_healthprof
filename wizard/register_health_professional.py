@@ -8,7 +8,7 @@ from trytond.wizard import Button, StateAction, StateView, Wizard
 
 class RegisterHealthProfessionalStart(ModelView):
     'Register Health Professional Start'
-    __name__ = 'z_wizard_healthprof.health_professional.start'
+    __name__ = 'z_wizard_medics.health_professional.start'
 
     name = fields.Char('Name', required=True)
     lastname = fields.Char('Family names', required=True)
@@ -94,11 +94,11 @@ class RegisterHealthProfessionalStart(ModelView):
 
 class RegisterHealthProfessionalWizard(Wizard):
     'Register Health Professional'
-    __name__ = 'z_wizard_healthprof.register_health_professional'
+    __name__ = 'z_wizard_medics.register_health_professional'
 
     start = StateView(
-        'z_wizard_healthprof.health_professional.start',
-        'z_wizard_healthprof.register_health_professional_start_view', [
+        'z_wizard_medics.health_professional.start',
+        'z_wizard_medics.register_health_professional_start_view', [
             Button('Cancel', 'end', 'tryton-cancel'),
             Button('Create', 'create_', 'tryton-ok', default=True),
         ])

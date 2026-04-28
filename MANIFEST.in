@@ -1,0 +1,4 @@
+include README.md
+include tryton.cfg
+recursive-include view *.xml
+recursive-include wizard *.xml
