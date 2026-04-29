@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).parent
 
 
 setup(
-    name="trytond-z-wizard-healthprof",
+    name="z-wizard-healthprof",
     version="4.2.0",
     description="Tryton/GNU Health wizard to register health professionals.",
     long_description=(BASE_DIR / "README.md").read_text(encoding="utf-8"),
