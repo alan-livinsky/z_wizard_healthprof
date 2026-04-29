@@ -1,7 +1,6 @@
 from trytond.exceptions import UserError
 from trytond.model import ModelView, fields
 from trytond.pool import Pool
-from trytond.transaction import Transaction
 from trytond.wizard import Button, StateAction, StateView, Wizard
 
 
@@ -12,6 +11,7 @@ class RegisterHealthProfessionalStart(ModelView):
     name = fields.Char('Nombre', required=True)
     lastname = fields.Char('Apellidos', required=True)
     idup = fields.Char('IDUP / DNI', required=True)
+    cuit = fields.Char('CUIT')
     gender = fields.Selection([
             (None, ''),
             ('m', 'Masculino'),
@@ -22,7 +22,8 @@ class RegisterHealthProfessionalStart(ModelView):
             ('u', 'Desconocido'),
             ], 'Genero', required=True, sort=False)
 
-    company = fields.Many2One('company.company', 'Empresa', required=True)
+    company = fields.Many2One(
+        'company.company', 'Institucion/Empresa contratante', required=True)
     start_date = fields.Date('Fecha de inicio', required=True)
     cargo = fields.Char('Cargo', required=True)
 
@@ -38,10 +39,9 @@ class RegisterHealthProfessionalStart(ModelView):
         'gnuhealth.specialty', None, None, 'Especialidades adicionales')
     info = fields.Text('Informacion adicional')
 
-    time_start = fields.Time('Hora de inicio', required=True, format='%H:%M')
-    time_end = fields.Time('Hora de fin', required=True, format='%H:%M')
-    appointment_minutes = fields.Integer(
-        'Minutos entre citas', required=True)
+    time_start = fields.Time('Hora de inicio', format='%H:%M')
+    time_end = fields.Time('Hora de fin', format='%H:%M')
+    appointment_minutes = fields.Integer('Minutos entre citas')
     monday = fields.Boolean('Lunes')
     tuesday = fields.Boolean('Martes')
     wednesday = fields.Boolean('Miercoles')
@@ -54,25 +54,13 @@ class RegisterHealthProfessionalStart(ModelView):
         help='Cantidad maxima de turnos a otorgar por dia.')
 
     @staticmethod
-    def default_company():
-        return Transaction().context.get('company')
-
-    @staticmethod
     def default_is_doctor():
         return False
 
     @staticmethod
-    def default_start_date():
-        Date = Pool().get('ir.date')
-        return Date.today()
-
-    @staticmethod
-    def default_monday():
-        return True
-
-    @staticmethod
-    def default_friday():
-        return True
+    def default_institution():
+        HealthProfessional = Pool().get('gnuhealth.healthprofessional')
+        return HealthProfessional.default_institution()
 
     def _compute_delta_time(self):
         if self.time_start and self.time_end and self.time_end > self.time_start:
@@ -149,6 +137,10 @@ class RegisterHealthProfessionalWizard(Wizard):
     def _validate_start(self):
         start = self.start
 
+        if start.cuit and not start.cuit.isdigit():
+            self._raise_user_error(
+                'El CUIT debe contener solo numeros.')
+
         weekdays = [
             start.monday,
             start.tuesday,
@@ -158,13 +150,31 @@ class RegisterHealthProfessionalWizard(Wizard):
             start.saturday,
             start.sunday,
         ]
+        has_schedule_data = any(weekdays) or any([
+            start.time_start,
+            start.time_end,
+            start.appointment_minutes,
+            start.daily_appointment_quantity,
+        ])
+
+        if not has_schedule_data:
+            return
+
         if not any(weekdays):
             self._raise_user_error(
                 'Debe seleccionar al menos un dia de trabajo.')
 
+        if not start.time_start or not start.time_end:
+            self._raise_user_error(
+                'Debe completar la hora de inicio y la hora de fin.')
+
         if start.time_end <= start.time_start:
             self._raise_user_error(
                 'La hora de fin debe ser posterior a la hora de inicio.')
+
+        if not start.appointment_minutes:
+            self._raise_user_error(
+                'Debe completar los minutos entre citas.')
 
         if start.appointment_minutes <= 0:
             self._raise_user_error(
@@ -199,6 +209,8 @@ class RegisterHealthProfessionalWizard(Wizard):
         Employee = pool.get('company.employee')
         HealthProfessional = pool.get('gnuhealth.healthprofessional')
         HealthProfessionalSpecialty = pool.get('gnuhealth.hp_specialty')
+        AlternativePersonID = pool.get(
+            'gnuhealth.person_alternative_identification')
         fed_country = Party.default_fed_country() or 'XXX'
 
         party, = Party.create([{
@@ -209,7 +221,15 @@ class RegisterHealthProfessionalWizard(Wizard):
                     'gender': self.start.gender,
                     'is_person': True,
                     'is_healthprof': True,
+                    'alternative_identification': bool(self.start.cuit),
                     }])
+
+        if self.start.cuit:
+            AlternativePersonID.create([{
+                        'name': party.id,
+                        'code': self.start.cuit,
+                        'alternative_id_type': 'cuit',
+                        }])
 
         Employee.create([{
                     'party': party.id,

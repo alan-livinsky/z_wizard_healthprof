@@ -7,12 +7,14 @@
     <field name="lastname"/>
     <label name="idup"/>
     <field name="idup"/>
+    <label name="cuit"/>
+    <field name="cuit"/>
     <newline/>
     <label name="gender"/>
     <field name="gender"/>
     <newline/>
 
-    <separator string="Datos laborales" colspan="4" id="datos_laborales"/>
+    <separator string="Institucion/Empresa contratante" colspan="4" id="datos_laborales"/>
     <label name="company"/>
     <field name="company"/>
     <label name="start_date"/>
